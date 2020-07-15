@@ -8,12 +8,19 @@ import java.util.NoSuchElementException;
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private class RandomizedQueueIterator implements Iterator<Item> {
-        private int i = 0;
+        private final int[] perm;
+        private int i;
+
+        public RandomizedQueueIterator()
+        {
+            perm = StdRandom.permutation(size);
+            i = 0;
+        }
 
         @Override
         public boolean hasNext()
         {
-            return items[i] != null;
+            return i < size;
         }
 
         @Override
@@ -21,7 +28,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         {
             if (!hasNext())
                 throw new NoSuchElementException();
-            return items[i++];
+            return items[perm[i++]];
         }
 
         @Override

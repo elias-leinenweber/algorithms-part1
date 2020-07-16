@@ -27,7 +27,7 @@ public class FastCollinearPoints {
         if (!checkInputAndSortPoints(points))
             throw new IllegalArgumentException();
         ls = new ArrayList<>();
-        if (points.length >= N) {
+        if (points.length >= N)
             for (Point p : sortedPoints) {
                 sortedBySlopePoints = sortedPoints.clone();
                 Arrays.sort(sortedBySlopePoints, p.slopeOrder());
@@ -41,16 +41,15 @@ public class FastCollinearPoints {
                     if (Double.compare(slopeA, slopeB) == 0) {
                         ++k;
                         end = i + 1;
-                        if (end < sortedBySlopePoints.length - 1)
+                        if (i + 1 < sortedBySlopePoints.length - 1)
                             continue;
                     }
                     if (k >= N && p.compareTo(sortedBySlopePoints[begin]) <= 0)
                         ls.add(new LineSegment(p, sortedBySlopePoints[end]));
                     k = 2;
-                    begin = end;
+                    begin = i + 1;
                 }
             }
-        }
     }
 
     // the number of line segments

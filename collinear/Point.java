@@ -13,6 +13,13 @@ import edu.princeton.cs.algs4.StdDraw;
 
 public class Point implements Comparable<Point> {
 
+    private class SlopeOrder implements Comparator<Point> {
+
+        public int compare(Point p1, Point p2) {
+            return Double.compare(slopeTo(p1), slopeTo(p2));
+        }
+    }
+
     private final int x;     // x-coordinate of this point
     private final int y;     // y-coordinate of this point
 
@@ -60,6 +67,18 @@ public class Point implements Comparable<Point> {
      */
     public double slopeTo(Point that) {
         /* YOUR CODE HERE */
+        double slope;
+        boolean eqX = x == that.x, eqY = y == that.y;
+
+        if (eqX && eqY)
+            slope = Double.NEGATIVE_INFINITY;
+        else if (eqX)
+            slope = Double.POSITIVE_INFINITY;
+        else if (eqY)
+            slope = +0.0;
+        else
+            slope = (double) (that.y - this.y) / (that.x - this.x);
+        return slope;
     }
 
     /**
@@ -76,6 +95,9 @@ public class Point implements Comparable<Point> {
      */
     public int compareTo(Point that) {
         /* YOUR CODE HERE */
+        int dy = y - that.y;
+
+        return dy == 0 ? x - that.x : dy;
     }
 
     /**
@@ -86,6 +108,7 @@ public class Point implements Comparable<Point> {
      */
     public Comparator<Point> slopeOrder() {
         /* YOUR CODE HERE */
+        return new SlopeOrder();
     }
 
 

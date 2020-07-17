@@ -5,14 +5,16 @@
  *                  sliding tiles.
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.StdOut;
+
 import java.util.LinkedList;
 
 public class Board {
 
     private final int[][] tiles;
     private final int n;
-    private final int blankRow;
-    private final int blankCol;
+    private int blankRow = 0;
+    private int blankCol = 0;
 
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
@@ -20,28 +22,29 @@ public class Board {
     {
         int i, j;
 
-        this.tiles = tiles;
+        this.tiles = tiles.clone();
         n = tiles.length;
-        j = 0;
         for (i = 0; i < n; ++i)
             for (j = 0; j < n; ++j)
-                if (tiles[i][j] == 0)
-                    break;
-        blankRow = i;
-        blankCol = j;
+                if (tiles[i][j] == 0) {
+                    blankRow = i;
+                    blankCol = j;
+                }
     }
 
     // string representation of this board
     public String toString()
     {
-        String s = n + "\n";
+        StringBuilder sb;
 
+        sb = new StringBuilder();
+        sb.append(n).append('\n');
         for (int[] row : tiles) {
             for (int tile : row)
-                s += " " + tile + " ";
-            s += "\n";
+                sb.append(String.format("%2d ", tile));
+            sb.append('\n');
         }
-        return s;
+        return sb.toString();
     }
 
     // board dimension n
@@ -72,8 +75,8 @@ public class Board {
         for (i = 0; i < n; ++i)
             for (j = 0; j < n; ++j)
                 if (tiles[i][j] != 0)
-                    d += abs((tiles[i][j] - 1) / n - i) +
-                         abs((tiles[i][j] - 1) % n - j);
+                    d += Math.abs((tiles[i][j] - 1) / n - i) +
+                         Math.abs((tiles[i][j] - 1) % n - j);
         return d;
     }
 
@@ -102,20 +105,33 @@ public class Board {
     public Iterable<Board> neighbors()
     {
         LinkedList<Board> neighbors;
-        int i, j;
 
         neighbors = new LinkedList<>();
-        for (i = blankRow - 1; i <= blankRow + 1; ++i)
-            for (j = blankCol - 1; j <= blankCol + 1; ++j)
-                if (i >= 0 && i < n && j >= 0 && j < n)
-                    neighbors.add(swap(blankRow, blankCol, i, j));
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < n; ++j)
+                if (tiles[i][j] == 0) {
+                    if (i > 0)
+                        neighbors.add(swap(i, j, i - 1, j));
+                    if (i < n - 1)
+                        neighbors.add(swap(i, j, i + 1, j));
+                    if (j > 0)
+                        neighbors.add(swap(i, j, i, j - 1));
+                    if (j < n - 1)
+                        neighbors.add(swap(i, j, i, j + 1));
+                }
         return neighbors;
     }
 
     // a board that is obtained by exchanging any pair of tiles
     public Board twin()
     {
+        int i, j;
 
+        for (i = 0; i < n; ++i)
+            for (j = 0; j < n - 1; ++j)
+                if (tiles[i][j] != 0 && tiles[i][j + 1] != 0)
+                    return swap(i, j, i, j + 1);
+        return null;
     }
 
     private Board swap(int i1, int j1, int i2, int j2)
@@ -130,25 +146,21 @@ public class Board {
         return new Board(swappedTiles);
     }
 
-    private static Board goal(int n)
-    {
-        int[][] tiles;
-        int i, j, k = 1;
-
-        tiles = new int[n][n];
-        for (i = 0; i < n; ++i)
-            for (j = 0; j < n; ++j)
-                tiles[i][j] = k++;
-        tiles[n - 1][n - 1] = 0;
-        return new Board(tiles);
-    }
-
-    private static int abs(int n)
-    {
-        return n < 0 ? -n : n;
-    }
-
     // unit testing (not graded)
     public static void main(String[] args)
-    { }
+    {
+        Board board;
+        int[][] tiles;
+
+        tiles = new int[][] {
+            { 0, 1, 3 },
+            { 4, 2, 5 },
+            { 7, 8, 6 }
+        };
+        board = new Board(tiles);
+        StdOut.println(board.toString());
+        StdOut.println(board.dimension());
+        StdOut.println(board.hamming());
+        StdOut.println(board.manhattan());
+    }
 }

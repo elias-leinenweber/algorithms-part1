@@ -11,25 +11,15 @@ import java.util.LinkedList;
 
 public class Board {
 
-    private final int[][] tiles;
+    private final int[][] grid;
     private final int n;
-    private int blankRow = 0;
-    private int blankCol = 0;
 
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
     public Board(int[][] tiles)
     {
-        int i, j;
-
-        this.tiles = tiles.clone();
         n = tiles.length;
-        for (i = 0; i < n; ++i)
-            for (j = 0; j < n; ++j)
-                if (tiles[i][j] == 0) {
-                    blankRow = i;
-                    blankCol = j;
-                }
+        grid = deepCopy(tiles, n);
     }
 
     // string representation of this board
@@ -39,7 +29,7 @@ public class Board {
 
         sb = new StringBuilder();
         sb.append(n).append('\n');
-        for (int[] row : tiles) {
+        for (int[] row : grid) {
             for (int tile : row)
                 sb.append(String.format("%2d ", tile));
             sb.append('\n');
@@ -61,7 +51,7 @@ public class Board {
         d = 0;
         for (i = 0; i < n; ++i)
             for (j = 0; j < n; ++j)
-                if (tiles[i][j] != 0 && tiles[i][j] != n * i + j + 1)
+                if (grid[i][j] != 0 && grid[i][j] != n * i + j + 1)
                     ++d;
         return d;
     }
@@ -74,16 +64,16 @@ public class Board {
         d = 0;
         for (i = 0; i < n; ++i)
             for (j = 0; j < n; ++j)
-                if (tiles[i][j] != 0)
-                    d += Math.abs((tiles[i][j] - 1) / n - i) +
-                         Math.abs((tiles[i][j] - 1) % n - j);
+                if (grid[i][j] != 0)
+                    d += Math.abs((grid[i][j] - 1) / n - i) +
+                         Math.abs((grid[i][j] - 1) % n - j);
         return d;
     }
 
     // is this board the goal board?
     public boolean isGoal()
     {
-        return manhattan() == 0;
+        return hamming() == 0;
     }
 
     // does this board equal y?
@@ -94,7 +84,7 @@ public class Board {
         if (y != null && getClass() == y.getClass() && n == ((Board) y).n) {
             for (i = 0; i < n; ++i)
                 for (j = 0; j < n; ++j)
-                    if (tiles[i][j] != ((Board) y).tiles[i][j])
+                    if (grid[i][j] != ((Board) y).grid[i][j])
                         return false;
             return true;
         }
@@ -109,7 +99,7 @@ public class Board {
         neighbors = new LinkedList<>();
         for (int i = 0; i < n; ++i)
             for (int j = 0; j < n; ++j)
-                if (tiles[i][j] == 0) {
+                if (grid[i][j] == 0) {
                     if (i > 0)
                         neighbors.add(swap(i, j, i - 1, j));
                     if (i < n - 1)
@@ -118,6 +108,7 @@ public class Board {
                         neighbors.add(swap(i, j, i, j - 1));
                     if (j < n - 1)
                         neighbors.add(swap(i, j, i, j + 1));
+                    break;
                 }
         return neighbors;
     }
@@ -129,7 +120,7 @@ public class Board {
 
         for (i = 0; i < n; ++i)
             for (j = 0; j < n - 1; ++j)
-                if (tiles[i][j] != 0 && tiles[i][j + 1] != 0)
+                if (grid[i][j] != 0 && grid[i][j + 1] != 0)
                     return swap(i, j, i, j + 1);
         return null;
     }
@@ -139,11 +130,23 @@ public class Board {
         int[][] swappedTiles;
         int tmp;
 
-        swappedTiles = tiles.clone();
+        swappedTiles = deepCopy(grid, n);
         tmp = swappedTiles[i1][j1];
         swappedTiles[i1][j1] = swappedTiles[i2][j2];
         swappedTiles[i2][j2] = tmp;
         return new Board(swappedTiles);
+    }
+
+    private int[][] deepCopy(int[][] array, int dim)
+    {
+        int[][] copy;
+        int i, j;
+
+        copy = new int[dim][dim];
+        for (i = 0; i < dim; ++i)
+            for (j = 0; j < dim; ++j)
+                copy[i][j] = array[i][j];
+        return copy;
     }
 
     // unit testing (not graded)

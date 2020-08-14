@@ -21,17 +21,19 @@ public class Solver {
         private final Board board;
         private final int moves;
         private final SearchNode prev;
+        private final int manhattan;
 
         public SearchNode(Board board, int moves, SearchNode prev)
         {
             this.board = board;
             this.moves = moves;
             this.prev = prev;
+            manhattan = board.manhattan();
         }
 
         private int priority()
         {
-            return board.manhattan() + moves;
+            return manhattan + moves;
         }
 
         @Override
@@ -57,7 +59,7 @@ public class Solver {
             node = pq.delMin();
             moves = node.moves;
 
-            if (node.board.manhattan() == 2 && node.board.twin().isGoal()) {
+            if (node.manhattan == 2 && node.board.twin().isGoal()) {
                 solvable = false;
                 break;
             }

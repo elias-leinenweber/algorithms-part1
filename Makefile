@@ -8,3 +8,6 @@ collinear: collinear/Point.java collinear/BruteCollinearPoints.java collinear/Fa
 
 8puzzle: 8puzzle/Board.java 8puzzle/Solver.java
 	zip -r 8puzzle.zip 8puzzle/Board.java 8puzzle/Solver.java
+
+kdtree: kdtree/PointSET.java kdtree/KdTree.java
+	zip -r kdtree.zip kdtree/PointSET.java kdtree/KdTree.java
